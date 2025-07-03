@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
 import fastf1
+import pathlib
 
 # Enable FastF1 cache
 fastf1.Cache.enable_cache(r"D:\PYTON PROGRAMMING\PYTHON FILES\Data-Visualization-Using-Python\STREAMLIT & PANEL\F1 RACE ANALYSIS PROJECTS\F1 Candian GP 2025\cache")
@@ -12,17 +13,17 @@ fastf1.Cache.enable_cache(r"D:\PYTON PROGRAMMING\PYTHON FILES\Data-Visualization
 race = fastf1.get_session(2025, 'Canada', 'R')
 race.load()
 
-# Streamlit Title & Description
-st.title("🇨🇦 F1 Canadian GP 2025 - Track Pace Dominance")
-st.markdown("Compare the **fastest laps** of any two drivers and visualize track dominance using segment colors!")
+# Function to load CSS from 'assets' folder
+def load_css(file_path):
+    with open(file_path) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# Select Drivers
-drivers = race.laps['Driver'].unique().tolist()
-col1, col2 = st.columns(2)
-with col1:
-    driver1 = st.selectbox('Select Driver 1', drivers, index=0)
-with col2:
-    driver2 = st.selectbox('Select Driver 2', drivers, index=1)
+css_path = pathlib.Path(r"D:\PYTON PROGRAMMING\PYTHON FILES\Data-Visualization-Using-Python\STREAMLIT & PANEL\F1 RACE ANALYSIS PROJECTS\f1-Canadian-GP-2025-Dashboard\assets\canadian_gp_css.css")
+load_css(css_path)
+
+# Streamlit Title & Description
+st.title("F1 Canadian GP 2025 - Track Pace Dominance")
+st.markdown("Compare the **fastest laps** of any two drivers and visualize track dominance using segment colors!")
 
 # Get telemetry data for both drivers
 def get_telemetry(driver1, driver2):
@@ -48,7 +49,7 @@ def plot_dominance():
     df2 = trimmed[trimmed['Driver'] == driver2].reset_index(drop=True)
 
     # Determine color per segment: magenta if driver1 faster, red if driver2 faster
-    colors = ['magenta' if s1 > s2 else 'red' for s1, s2 in zip(df1['Speed'], df2['Speed'])]
+    colors = ['#EF3DF2' if s1 > s2 else "#00FF40" for s1, s2 in zip(df1['Speed'], df2['Speed'])]
 
     # Build segments using driver1’s coordinates (same for both)
     x = df1['X'].values
@@ -60,23 +61,46 @@ def plot_dominance():
     lc = LineCollection(segments, colors=colors, linewidths=3)
 
     # Plot
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(10,6))
     fig.patch.set_facecolor('#1E1E1E')
     ax.add_collection(lc)
     ax.autoscale()
     ax.set_aspect('equal')
     ax.axis('off')
-    ax.set_title(f"{driver1} vs {driver2} — Track Pace Dominance", fontsize=16, color='white', pad=20)
 
     # Annotate Legend (top-left corner)
-    ax.text(0.01, 1.02, f"{driver1} Faster", transform=ax.transAxes, color='magenta', fontsize=10, fontweight='bold')
-    ax.text(0.01, 0.97, f"{driver2} Faster", transform=ax.transAxes, color='red', fontsize=10, fontweight='bold')
+    ax.text(0.8, 1, f"{driver1}", transform=ax.transAxes,
+            color='#EF3DF2', fontsize=5, ha='left')
+    
+    ax.text( 0.81, 0.975, f"V/S", transform=ax.transAxes,
+            color='white', fontsize=5, ha='left')
+
+    ax.text(0.8, 0.95, f"{driver2}", transform=ax.transAxes,
+            color='#00FF40', fontsize=5, ha='left')
+
 
     plt.tight_layout()
     plt.close(fig)  # Prevents duplicate rendering in notebook
 
     return fig
 
-# Render in Streamlit
-fig = plot_dominance()
-st.pyplot(fig)
+# --- TRACK DOMINANCE PLOT FIRST ROW, FIRST COLUMN ---
+col1, col2 = st.columns([3, 1])  # Wider graph, narrow column for extras
+
+with col2:
+    st.markdown("### Driver Selection")
+    
+    # Select Drivers
+    drivers = race.laps['Driver'].unique().tolist()
+    driver1 = st.selectbox("Select Driver 1", drivers, index=0)
+    driver2 = st.selectbox("Select Driver 2", drivers, index=1)
+
+with col1:
+    st.markdown('<div class="plot-container">', unsafe_allow_html=True)
+    fig = plot_dominance()
+    st.pyplot(fig)
+    
+
+
+
+

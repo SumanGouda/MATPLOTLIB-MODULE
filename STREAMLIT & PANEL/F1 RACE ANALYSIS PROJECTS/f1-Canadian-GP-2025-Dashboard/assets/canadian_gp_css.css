@@ -1,0 +1,38 @@
+/* Set app background and font */
+body {
+    color: #ffffff;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Style all selectboxes */
+[data-testid="stSelectbox"] {
+    background-color: #1a1a1a;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    border: 2px solid #31e7ff;
+    padding: 4px;
+}
+.stApp {
+    margin: auto;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: auto;
+    background: linear-gradient(315deg, #4f2991 3%, #7dc4ff 38%, #36cfcc 68%, #a92ed3 98%);
+    animation: gradient 15s ease infinite;
+    background-size: 400% 400%;
+    background-attachment: fixed;
+}
+/* Style the title */
+h1 {
+    color: #b4bdb3 !important;
+}
+
+/* This will scale the plot down but keep high resolution */
+.plot-container {
+    transform: scale(0.20);             /* Scale the plot down by 75% */
+    transform-origin: top left;         /* Set the origin of the scaling to the top-left corner of the plot */
+    margin: 0;                          /* Remove any margin around the plot */
+    padding: 0;                         /* Remove any padding around the plot */    
+    display: inline-block;              /* Display the plot as an inline-block element */
+}
+
